@@ -1,10 +1,10 @@
-from classes.matrix_processing import read_matrix
+from Matrices.matrix_processing import read_matrix
 from classes.parser import SimpleCLI
-from classes.findimage import find_image
+from ImagesProcess.image_processing import find_image
 
 import sys
 
-from metadata_processing import preprocess_image_description
+from ImagesProcess.metadata_processing import preprocess_image_description
 
 
 def run_app():

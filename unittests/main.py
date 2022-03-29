@@ -1,6 +1,6 @@
 import unittest
 
-from classes.findimage import FindImage
+from ImagesProcess.image_processing import FindImage
 
 
 class TestStringMethods(unittest.TestCase):

@@ -1,7 +1,7 @@
 from collections import defaultdict
 
-from classes.matrix_processing import matrix_relative_position, flatten
-from kmp import kmp_search
+from Matrices.matrix_processing import matrix_relative_position, flatten
+from Algorithm.kmp import kmp_search
 
 
 def find_image_position(matrix_occurences, pattern_image, inaccuracy=1):
