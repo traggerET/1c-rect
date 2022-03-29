@@ -8,7 +8,7 @@ class SimpleCLI:
         self.resp["inaccuracy"] = 1
         self.resp["oriented"] = False
 
-    def ParseArgs(self, args: typing.List) -> defaultdict:
+    def parse_args(self, args: typing.List) -> defaultdict:
         if len(args) == 1:
             return self.resp
         if args[1] == "oriented":

@@ -1,7 +1,5 @@
 import App
 
 if __name__ == '__main__':
-    App.RunApp()
-    print("fucj")
-
+    App.run_app()
 
