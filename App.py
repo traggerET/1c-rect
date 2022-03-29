@@ -1,4 +1,5 @@
 import sys
+import math
 
 from classes.common import ReadMatrix
 from classes.parser import SimpleCLI
@@ -6,18 +7,24 @@ from classes.findimage import FindImage
 
 
 def OrientPosition(description):
-    if description["position"][1] < description["rows_count"] // 2:
-        if description["position"][0] < description["rows_len_count"] // 2:
-            description["oriented_pos"] = "северо-запад"
-
-        else:
-            description["oriented_pos"] = "северо-воcток"
-    else:
-        if description["position"][0] < description["rows_len_count"] // 2:
-            description["oriented_pos"] = "юго-запад"
-
-        else:
-            description["oriented_pos"] = "юго-воcток"
+    orientations = ["северо-запад", "север", "северо-восток",
+                    "запад", "центр", "восток",
+                    "юго-запад", "юг", "юго-восток"
+                    ]
+    rows = description["rows_count"]
+    row_len = description["rows_len_count"]
+    x_grid = [x for x in range(rows // 3, rows + 1, rows // 3)]
+    y_grid = [y for y in range(row_len // 3, row_len + 1, row_len // 3)]
+    x_left = y_left = 0
+    current = description["position"]
+    for i, x_right in enumerate(x_grid):
+        for j, y_right in enumerate(y_grid):
+            if x_left <= current[1] <= x_right \
+                    and y_left <= current[0] <= y_right:
+                description["oriented_pos"] = orientations[i + j]
+                break
+            y_left = y_right
+        x_left = x_right
 
 def preprocessImageDescription(description, params):
     processed_description = dict(description)
@@ -25,7 +32,6 @@ def preprocessImageDescription(description, params):
         OrientPosition(processed_description)
 
     return processed_description
-
 
 
 def RunApp():
