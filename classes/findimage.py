@@ -5,31 +5,30 @@ from itertools import chain
 def matrix_relative_position(idx, matrix_row_len):
     x_offset = idx % matrix_row_len
     y_offset = (idx - x_offset) // matrix_row_len
-    return (x_offset, y_offset)
+    return x_offset, y_offset
 
 
-def find_pattern_position(matrix_occurences, pattern_image):
+def find_image_position(matrix_occurences, pattern_image, inaccuracy=1):
     position = [-1, -1]
     for x, y in matrix_occurences[pattern_image[0]]:
         matching_lines = 1
-        for i in range(1, len(pattern_image)):
+        for i in range(1, len(pattern_image), inaccuracy):
             if (x, y + i) not in matrix_occurences[pattern_image[i]]:
                 matching_lines = 1
                 break
             else:
-                matching_lines += 1
-        if matching_lines == len(pattern_image):
+                matching_lines += 1 + inaccuracy - 1
+        if  len(pattern_image) == 1 or matching_lines != 1:
             position = [x, y]
             break
     return position
 
 
-
-def FindImage(source_image, pattern_image):
+def FindImage(source_image, pattern_image, **params):
     flat_image = flatten(source_image)
-    flat_occurences = defaultdict(set)
+    flat_occurrences = defaultdict(set)
     for batch in pattern_image:
-        flat_occurences[batch] = KMPSearch(batch, flat_image)
+        flat_occurrences[batch] = KMPSearch(batch, flat_image)
 
     source_row_len = len(source_image[0])
 
@@ -38,38 +37,39 @@ def FindImage(source_image, pattern_image):
 
     # set in order to not iterate over the same lines
     for batch in set(pattern_image):
-        for occurence in flat_occurences[batch]:
+        for occurence in flat_occurrences[batch]:
             x, y = matrix_relative_position(occurence, source_row_len)
             if x + len(batch) <= source_row_len:
                 matrix_position = (x, y)
                 matrix_occurences[batch].add(matrix_position)
 
-    position = find_pattern_position(matrix_occurences, pattern_image)
+    position = find_image_position(matrix_occurences, pattern_image,
+                                   inaccuracy=params["inaccuracy"])
 
     return position
 
 
 def KMPSearch(pat, txt):
-    M = len(pat)
-    N = len(txt)
+    pattern_len = len(pat)
+    source_len = len(txt)
 
-    lps = [0] * M
+    lps = [0] * pattern_len
     j = 0
 
-    computeLPSArray(pat, M, lps)
+    computeLPSArray(pat, pattern_len, lps)
     occurences = set()
     i = 0
-    while i < N:
+    while i < source_len:
         if pat[j] == txt[i]:
             i += 1
             j += 1
 
-        if j == M:
+        if j == pattern_len:
             occurences.add(i - j)
             j = lps[j - 1]
 
         # mismatch after j matches
-        elif i < N and pat[j] != txt[i]:
+        elif i < source_len and pat[j] != txt[i]:
             if j != 0:
                 j = lps[j - 1]
             else:

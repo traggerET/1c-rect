@@ -5,11 +5,26 @@ from classes.parser import SimpleCLI
 from classes.findimage import FindImage
 
 
-def MatchImages(source_image, cut_image, params):
-    position = FindImage(source_image, cut_image)
+def OrientPosition(description):
+    if description["position"][1] < description["rows_count"] // 2:
+        if description["position"][0] < description["rows_len_count"] // 2:
+            description["oriented_pos"] = "северо-запад"
 
-    if not params["oriented"]:
-        return position
+        else:
+            description["oriented_pos"] = "северо-воcток"
+    else:
+        if description["position"][0] < description["rows_len_count"] // 2:
+            description["oriented_pos"] = "юго-запад"
+
+        else:
+            description["oriented_pos"] = "юго-воcток"
+
+def preprocessImageDescription(description, params):
+    processed_description = dict(description)
+    if params["oriented"]:
+        OrientPosition(processed_description)
+
+    return processed_description
 
 
 
@@ -20,8 +35,17 @@ def RunApp():
     source_image = ReadMatrix(sys.stdin)
     cut_image = ReadMatrix(sys.stdin)
 
-    position = FindImage(source_image, cut_image)
+    position = FindImage(source_image, cut_image,
+                         inaccuracy=params["inaccuracy"])
 
-    ConvertParams(params, position, source_image, cut_image)
+    description = dict(
+        {
+            "position": position,
+            "rows_count": len(source_image),
+            "rows_len_count": len(source_image[0])
+        }
+    )
 
-    print(position)
+    processed_descr = preprocessImageDescription(description, params)
+
+    print(processed_descr)
