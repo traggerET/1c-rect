@@ -13,6 +13,7 @@ def orient_position(description):
     x_left = y_left = 0
 
     for i, x_right in enumerate(x_grid):
+        y_left = 0
         for j, y_right in enumerate(y_grid):
 
             # check if left-upper corner fits into grid dividers
